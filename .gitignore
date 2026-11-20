@@ -3,3 +3,6 @@
 *.png
 !exemplos/
 !exemplos/*.png
+_pycache_/
+*.pyc
+uv.lock
