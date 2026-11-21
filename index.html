@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caminho das Letras - Letter Path</title>
+<style>
+  body{font-family:Arial; text-align:center; background:#FFF7E6; margin:0; padding:20px}
+  .card{background:white; max-width:420px; margin:0 auto; padding:20px; border-radius:20px; box-shadow:0 10px 25px rgba(0,0,0,.1)}
+  h1{color:#FF6B35; margin:5px 0}
+  .lang button{padding:10px 16px; border-radius:30px; border:2px solid #FF6B35; background:white; cursor:pointer; font-size:16px; margin:5px}
+  .lang button.active{background:#FF6B35; color:white}
+  input{padding:12px; border-radius:12px; border:2px solid #FFD166; width:80%; font-size:16px; text-align:center}
+  .letters{display:flex; justify-content:center; gap:12px; margin:20px 0}
+  .letter{font-size:50px; width:70px; height:70px; background:#FFD166; border-radius:15px; display:flex; align-items:center; justify-content:center; cursor:pointer}
+  .letter:hover{transform:scale(1.1)}
+  #msg{font-size:20px; font-weight:bold; color:#2EC4B6; min-height:30px}
+  .btn{background:#2EC4B6; color:white; border:none; padding:14px 20px; border-radius:30px; font-size:16px; cursor:pointer; margin:5px; width:90%}
+  .btn-print{background:#FF6B35}
+  @media print{ .no-print{display:none} body{background:white} }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="lang no-print">
+    <button id="btnPT" class="active" onclick="setLang('pt')">🇧🇷 Português</button>
+    <button id="btnEN" onclick="setLang('en')">🇺🇸 English</button>
+  </div>
+
+  <h1 id="title">Caminho das Letras 🐾</h1>
+  <p id="subtitle">Aprenda brincando!</p>
+
+  <div class="no-print">
+    <p id="labelName">Nome da criança:</p>
+    <input id="nome" placeholder="Ex: Maria" value="Maria">
+    <p id="instruction" style="font-size:18px">Onde está a letra <b>A</b>?</p>
+    <div class="letters">
+      <div class="letter" onclick="check(this,'B')">B</div>
+      <div class="letter" onclick="check(this,'A')">A</div>
+      <div class="letter" onclick="check(this,'C')">C</div>
+    </div>
+    <div id="msg"></div>
+    <button class="btn" onclick="novaRodada()">🔀 <span id="btnNew">Nova rodada</span></button>
+  </div>
+
+  <div id="printArea" style="margin-top:15px; border:2px dashed #FF6B35; padding:15px; border-radius:15px">
+    <h2 id="printTitle">Folhinha da Letra A - Maria</h2>
+    <p id="printText">Treine a letra A de Abacaxi 🍍</p>
+    <div style="font-size:70px; letter-spacing:10px; color:#ccc">A A A A</div>
+    <div style="font-size:30px">A - - - - - -</div>
+    <p>✏️ Pinte o Abacaxi!</p>
+    <div style="font-size:60px">🍍</div>
+  </div>
+
+  <button class="btn btn-print no-print" onclick="window.print()">🖨️ <span id="btnPrint">Imprimir folhinha</span></button>
+  <p class="no-print" style="font-size:13px">R$ 19,90 - paga uma vez, brinca em tudo • $9.90 - pay once</p>
+</div>
+
+<script>
+let lang = 'pt';
+let acertos = 0;
+const textos = {
+  pt: { title:"Caminho das Letras 🐾", subtitle:"Aprenda brincando!", labelName:"Nome da criança:", instruction:"Onde está a letra <b>A</b>?", btnNew:"Nova rodada", btnPrint:"Imprimir folhinha", acertou:"🎉 MUITO BEM! Você achou!", errou:"Ops! Tenta de novo 💛", printTitle:"Folhinha da Letra A - ", printText:"Treine a letra A de Abacaxi 🍍" },
+  en: { title:"Letter Path 🐾", subtitle:"Learn by playing!", labelName:"Child's name:", instruction:"Where is the letter <b>A</b>?", btnNew:"New round", btnPrint:"Print worksheet", acertou:"🎉 GREAT JOB! You found it!", errou:"Oops! Try again 💛", printTitle:"Letter A Worksheet - ", printText:"Practice letter A for Apple 🍎" }
+};
+
+function setLang(l){
+  lang = l;
+  document.getElementById('btnPT').classList.toggle('active', l==='pt');
+  document.getElementById('btnEN').classList.toggle('active', l==='en');
+  const t = textos[l];
+  document.getElementById('title').innerText = t.title;
+  document.getElementById('subtitle').innerText = t.subtitle;
+  document.getElementById('labelName').innerText = t.labelName;
+  document.getElementById('instruction').innerHTML = t.instruction;
+  document.getElementById('btnNew').innerText = t.btnNew;
+  document.getElementById('btnPrint').innerText = t.btnPrint;
+  updatePrint();
+}
+
+function check(el, letra){
+  const t = textos[lang];
+  if(letra==='A'){
+    acertos++;
+    document.getElementById('msg').innerText = t.acertou + ` (${acertos} ⭐)`;
+    el.style.background = '#2EC4B6'; el.style.color='white';
+  } else {
+    document.getElementById('msg').innerText = t.errou;
+    el.style.background = '#FFB4A2';
+  }
+}
+
+function novaRodada(){
+  document.querySelectorAll('.letter').forEach(e=>{e.style.background='#FFD166'; e.style.color='black'});
+  document.getElementById('msg').innerText = '';
+  // embaralha
+  const letras = ['A','B','C'].sort(()=>Math.random()-0.5);
+  document.querySelectorAll('.letter').forEach((e,i)=>{ e.innerText=letras[i]; e.setAttribute('onclick',`check(this,'${letras[i]}')`) });
+}
+
+function updatePrint(){
+  const nome = document.getElementById('nome').value || 'Maria';
+  const t = textos[lang];
+  document.getElementById('printTitle').innerText = t.printTitle + nome;
+  document.getElementById('printText').innerText = t.printText;
+}
+document.getElementById('nome').addEventListener('input', updatePrint);
+updatePrint();
+</script>
+</body>
+</html>
